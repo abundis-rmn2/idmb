@@ -1,3 +1,5 @@
+FROM scratch
+
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Install apt dependencies
