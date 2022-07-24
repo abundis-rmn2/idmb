@@ -24,11 +24,11 @@ RUN mkdir /home/${_USER}/app && chown ${UID}:${GID} /home/${_USER}/app
 
 USER ${_USER}
 
-COPY --chown=${UID}:${GID} ./requirements* /app/
-COPY --chown=${UID}:${GID} ./util /app/util/
+COPY --chown=${UID}:${GID} requirements* /home/${_USER}/app
+COPY --chown=${UID}:${GID} ./py /home/${_USER}/app/py
+
 WORKDIR /home/${_USER}/app
 
-RUN python -m pip install -U pip
-RUN python -m pip install instagrapi
+RUN pip install -r requirements.txt
 
 CMD bash
