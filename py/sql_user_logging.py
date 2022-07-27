@@ -10,9 +10,25 @@ import re
 import requests
 import ftplib
 import time
-from datetime import datetime
 import sys
 import shutil
+from datetime import date
+import datetime
+
+cl = Client()
+f = open('sesion.json')
+data = json.load(f)
+x = datetime.datetime.now()
+today = datetime.datetime.now()
+cl.login_by_sessionid(data['authorization_data']['sessionid'])
+
+print("Datos de la sesión guardados en sesion.json")
+print(cl.get_settings()['authorization_data']['sessionid'])
+print("Datos del usuario que inició sesión")
+print("PK: ", cl.user_info(cl.user_id).pk)
+print("Username: ", cl.user_info(cl.user_id).username)
+print("Session ID: ", data['authorization_data']['sessionid'])
+print("Date: ", today)
 
 try:
     cnx = mysql.connector.connect(user='abundisc_xamuri',
@@ -31,10 +47,12 @@ else:
     # get cursor object
     cursor = cnx.cursor()
 
-    sql = "INSERT INTO test (id, user, session, date)" \
+    sql = "INSERT INTO user_logs (id, user, session, date)" \
                   "VALUES (%s, %s, %s, %s)" #4 entradas
-    val = ("prueba", "prueba", "prueba", "Prueba")
+    val = ("prueba", cl.user_info(cl.user_id).pk, cl.get_settings()['authorization_data']['sessionid'], today)
     cursor.execute(sql, val)
 
     cnx.commit()
     print('BD funciona')
+
+f.close()

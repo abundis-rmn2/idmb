@@ -6,7 +6,7 @@ cl = Client()
 f = open('sesion.json')
 data = json.load(f)
 
-print (data['authorization_data']['sessionid'])
+print(data['authorization_data']['sessionid'])
 cl.login_by_sessionid(data['authorization_data']['sessionid'])
 
 print("Datos de la sesión guardados en sesion.json")

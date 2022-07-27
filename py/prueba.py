@@ -1,4 +1,4 @@
-import os
+mport os
 from instagrapi import Client
 
 cl = Client()
