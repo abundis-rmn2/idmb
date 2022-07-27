@@ -18,7 +18,7 @@ import datetime
 cl = Client()
 f = open('sesion.json')
 data = json.load(f)
-g = open("../config.json")
+g = open("config.json")
 config = json.load(g)
 x = datetime.datetime.now()
 today = datetime.datetime.now()
