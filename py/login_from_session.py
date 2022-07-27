@@ -3,7 +3,7 @@ import json
 from instagrapi import Client
 
 cl = Client()
-f = open('sesion.json')
+f = open('session.json')
 data = json.load(f)
 
 print(data['authorization_data']['sessionid'])
