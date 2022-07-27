@@ -18,6 +18,8 @@ import datetime
 cl = Client()
 f = open('sesion.json')
 data = json.load(f)
+g = open("../config.json")
+config = json.load(g)
 x = datetime.datetime.now()
 today = datetime.datetime.now()
 cl.login_by_sessionid(data['authorization_data']['sessionid'])
@@ -31,10 +33,10 @@ print("Session ID: ", data['authorization_data']['sessionid'])
 print("Date: ", today)
 
 try:
-    cnx = mysql.connector.connect(user='abundisc_xamuri',
-                                  password='%8T[-kWX,E}N',
-                                  host='abundis.com.mx',
-                                  database='abundisc_idmb_nvi',
+    cnx = mysql.connector.connect(user=config["SQL"]["username"],
+                                  password=config["SQL"]["password"],
+                                  host=config["SQL"]["hostname"],
+                                  database=config["SQL"]["database"],
                                   )
 except mysql.connector.Error as err:
     if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

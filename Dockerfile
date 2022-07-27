@@ -24,6 +24,7 @@ RUN mkdir /home/${_USER}/app && chown ${UID}:${GID} /home/${_USER}/app
 
 USER ${_USER}
 
+COPY --chown=${UID}:${GID} config* /home/${_USER}/app
 COPY --chown=${UID}:${GID} requirements* /home/${_USER}/app
 COPY --chown=${UID}:${GID} ./py /home/${_USER}/app/py
 

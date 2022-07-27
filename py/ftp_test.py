@@ -1,17 +1,15 @@
 import ftplib
 import os
+import json
 
-# Datos FTP
-ftp_servidor = 'abundis.com.mx'
-ftp_usuario = 'data_python@abundis.com.mx'
-ftp_clave = '0xQbrS1pxXdf'
-ftp_raiz = '/home/abundisc/'  # donde queremos subir el fichero
+f = open("../config.json")
+config = json.load(f)
 
-ftp_server = ftplib.FTP(ftp_servidor,ftp_usuario,ftp_clave)
+ftp_server = ftplib.FTP(config["FTP"]["hostname"],config["FTP"]["username"],config["FTP"]["password"])
 
 ftp_server.encoding = "utf-8"
 
-filename = "sesion.json"
+filename = "../config.json"
 
 with open(filename, "rb") as file:
     ftp_server.storbinary(f"STOR {filename}",file)
