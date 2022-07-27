@@ -1,21 +1,19 @@
-import ftplib
-import os
+import argparse
+from instagrapi import Client
 
-# Datos FTP
-ftp_servidor = 'abundis.com.mx'
-ftp_usuario = 'data_python@abundis.com.mx'
-ftp_clave = '0xQbrS1pxXdf'
-ftp_raiz = '/home/abundisc/'  # donde queremos subir el fichero
+parser = argparse.ArgumentParser(description='Paso de parámetros')
+#El parámetro 1 es obligatorio que sea un entero
+parser.add_argument("-usr", dest="IG_username", help="Instagram User")
+#No forzamos ningún tipo para el parámetro 2
+parser.add_argument("-pass", dest="IG_password", help="Instagram Password")
+params = parser.parse_args()
+print(params.IG_username)
+print(params.IG_password)
 
-ftp_server = ftplib.FTP(ftp_servidor,ftp_usuario,ftp_clave)
-
-ftp_server.encoding = "utf-8"
-
-filename = "sesion.json"
-
-with open(filename, "rb") as file:
-    ftp_server.storbinary(f"STOR {filename}",file)
-
-ftp_server.dir()
-
-ftp_server.quit()
+cl = Client()
+cl.login(params.IG_username, params.IG_password)
+cl.dump_settings('sesion.json')
+print("Datos de la sesión guardados en sesion.json")
+print(cl.get_settings())
+print("Datos del usuario que inició sesión")
+print(cl.user_info(cl.user_id))
