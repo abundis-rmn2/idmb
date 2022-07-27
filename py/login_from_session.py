@@ -9,7 +9,7 @@ data = json.load(f)
 print(data['authorization_data']['sessionid'])
 cl.login_by_sessionid(data['authorization_data']['sessionid'])
 
-print("Datos de la sesión guardados en sesion.json")
+print("Datos de la sesión guardados en session.json")
 print(cl.get_settings())
 print("Datos del usuario que inició sesión")
 print(cl.user_info(cl.user_id))
