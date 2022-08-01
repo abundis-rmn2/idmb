@@ -19,14 +19,8 @@ print("Datos de la sesión guardados en session.json")
 print("Session ID: ", session['authorization_data']['sessionid'])
 cl.login_by_sessionid(session['authorization_data']['sessionid'])
 user_minning = "miss_lizzy_dizzy"
-user_data = cl.user_info(cl.user_id_from_username(user_minning))
-print(user_data.following_count)
-
-list_following=cl.user_following_v1(cl.user_id_from_username(user_minning))
-
-for i, item in enumerate(list_following,1):
-    print(item, end = "\n")
-    print(i, end = "\n")
-    print("----------------------------", end = "\n")
+#print( cl.user_medias_paginated(cl.user_id_from_username(user_minning),20) )
+print( cl.user_medias_paginated(cl.user_id_from_username(user_minning),2, "QVFES1NrU3EtcmdNekEzZXZuU0tJa1FLS2hsMUUtOGFsTm9HMXdrMXppVGQ4ZVpibHZCSE5tR1NSX1lqTm1JRWx1RWkwUFZKWHVFd0VXeWN2TWs2M1VvMA=="))
+print( cl.user_medias_paginated(cl.user_id_from_username(user_minning),2, "QVFES1NrU3EtcmdNekEzZXZuU0tJa1FLS2hsMUUtOGFsTm9HMXdrMXppVGQ4ZVpibHZCSE5tR1NSX1lqTm1JRWx1RWkwUFZKWHVFd0VXeWN2TWs2M1VvMA==")[1] )
 
 print("--- %s seconds ---" % (time.time() - start_time))
