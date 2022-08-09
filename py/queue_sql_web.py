@@ -1,8 +1,15 @@
 import mysql.connector
+import ftplib
+import json
 from functions_minning import *
 
 c = open("config.json")
 config = json.load(c)
+s = open("session.json")
+session = json.load(s)
+
+ftp_server = ftplib.FTP(config["FTP"]["hostname"],config["FTP"]["username"],config["FTP"]["password"])
+ftp_server.encoding = "utf-8"
 x = datetime.datetime.now()
 today = datetime.datetime.now()
 
@@ -32,14 +39,24 @@ def fetch(batch_size=2, sleep_time=5):
         queue_batch = cursor.fetchall()
 
         for q in queue_batch:
-            print(q)
-            #cursor.execute("UPDATE queue SET status = 'working' WHERE id = %s" % (q[0]))
-            idmb_userInfo(q[2], 4, 15, 0, 0)
-            #cnx.commit()
+            print(q[4])
+            if q[4] == "user":
+                print("User mining")
+                cursor.execute("UPDATE queue SET status = 'working' WHERE id = %s" % (q[0]))
+                cnx.commit()
+                idmb_userInfo(q[2], 5, 15, 1, 0, 1, cnx, q[1], ftp_server)
+                cnx.reconnect()
+                cursor.execute("UPDATE queue SET status = 'done' WHERE id = %s" % (q[0]))
+            elif q[4] == "hashtagRecent":
+                print("Hashtag Recent mining")
+            elif q[4] == "hashtagTop":
+                print("Hashtag Top mining")
+            else:
+                return
 
         print("Pause of sleep_time: ", str(sleep_time))
         time.sleep(sleep_time)
         fetch(batch_size, sleep_time)
 
 
-fetch(2, 1)
+fetch(2, 5)
