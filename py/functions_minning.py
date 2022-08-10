@@ -30,8 +30,9 @@ def idmb_userInfo(username, request_timeout=2, media_pagination=30, media_minnin
     info = cl.user_info_by_username(username)
     print(info)
     if sql == 1:
+
         cnx.reconnect()
-        inner_cursor = cnx.cursor()
+        cursor = cnx.cursor()
         following = json.dumps(idmb_userFollowing(username, 2))
         print(following)
         print("SQL insert active")
@@ -39,7 +40,7 @@ def idmb_userInfo(username, request_timeout=2, media_pagination=30, media_minnin
         sql = "INSERT INTO data_users (MUID, pk, username, full_name, is_private, following_count, follower_count, biography, external_url, account_type, is_business, public_email, city_id, city_name, following, mined_at)" \
               "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" #16
         val = (MUID, info.pk, info.username, info.full_name, info.is_private, info.following_count, info.follower_count, info.biography, info.external_url, info.account_type, info.is_business, info.public_email, info.city_id, info.city_name, following, datetime.datetime.now())
-        inner_cursor.execute(sql, val)
+        cursor.execute(sql, val)
         cnx.commit()
     else:
         print("SQL insert not active")
@@ -225,9 +226,12 @@ def userDataUpload(user_dir, user_id):
     toFTP = os.listdir(user_dir)
     for filename in toFTP:
         if filename in ftp_server.nlst():
+            print("Uploading: ")
             with open(os.path.join(user_dir, filename), 'rb') as file:  # Here I open the file using it's  full path
                 ftp_server.storbinary(f'STOR {filename}', file)  # Here I store the file in the FTP using only it's name as I intended
             print(filename)
+        else:
+            print("File already exist")
     ftp_server.quit()
     # print("Deleting temporal batch files")
     # files = glob.glob(user_dir)

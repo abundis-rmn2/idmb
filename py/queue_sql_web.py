@@ -10,6 +10,12 @@ config = json.load(c)
 s = open("session.json")
 session = json.load(s)
 
+#if os.path.isfile("proxy.txt"):
+#    proxy = open("proxy.txt", "r")
+#    proxy_address = proxy.read()
+#    print(proxy_address)
+#    cl.set_proxy(proxy_address)
+
 #ftp_server = ftplib.FTP(config["FTP"]["hostname"],config["FTP"]["username"],config["FTP"]["password"])
 #ftp_server.encoding = "utf-8"
 x = datetime.datetime.now()
@@ -36,7 +42,6 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30):
         cursor = cnx.cursor()
         cursor.execute("SELECT * FROM queue "
                        "WHERE status IN ('waiting', 'working') " 
-                       #"WHERE ('waiting', 'working') in (status) "
                        "LIMIT 0, %s" % (batch_size))
 
         queue_batch = cursor.fetchall()

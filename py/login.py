@@ -13,9 +13,13 @@ parser.add_argument("-proxy", dest="IG_proxy", help="Instagram Proxy")
 params = parser.parse_args()
 print(params.IG_username)
 print(params.IG_password)
+print(params.IG_proxy)
 
 cl = Client()
-cl.set_proxy("socks5://4g.hydraproxy.com:55374")
+if params.IG_proxy != None:
+    cl.set_proxy(params.IG_proxy)
+    with open('proxy.txt', 'w') as f:
+        f.write(params.IG_proxy)
 cl.login(params.IG_username, params.IG_password)
 cl.dump_settings('session.json')
 print("Datos de la sesión guardados en session.json")
