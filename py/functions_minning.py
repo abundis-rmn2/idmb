@@ -21,6 +21,7 @@ today = datetime.datetime.now()
 print("Datos de la sesión guardados en session.json")
 print("Session ID: ", session['authorization_data']['sessionid'])
 cl.login_by_sessionid(session['authorization_data']['sessionid'])
+botUsername = cl.account_info().username
 
 def idmb_userInfo(username, request_timeout=2, media_pagination=30, media_minning=0, story_minning=0, sql=0, cnx=None, MUID=None, ftp=None):
     start_time = time.time()
@@ -213,7 +214,7 @@ def directory_exists(dir,ftp):
     return False
 
 def userDataUpload(user_dir, user_id):
-    ftp_server = ftplib.FTP(config["FTP"]["hostname"], config["FTP"]["username"], config["FTP"]["password"])
+    ftp_server = ftplib.FTP_TLS(config["FTP"]["hostname"], config["FTP"]["username"], config["FTP"]["password"])
     ftp_server.encoding = "utf-8"
     ftp_server.cwd('/media')
     if directory_exists(user_id, ftp_server) is False:  # (or negate, whatever you prefer for readability)
@@ -223,11 +224,19 @@ def userDataUpload(user_dir, user_id):
     print("Uploading medias batch")
     toFTP = os.listdir(user_dir)
     for filename in toFTP:
-        with open(os.path.join(user_dir, filename), 'rb') as file:  # Here I open the file using it's  full path
-            ftp_server.storbinary(f'STOR {filename}',
-                           file)  # Here I store the file in the FTP using only it's name as I intended
+        if filename in ftp_server.nlst():
+            with open(os.path.join(user_dir, filename), 'rb') as file:  # Here I open the file using it's  full path
+                ftp_server.storbinary(f'STOR {filename}', file)  # Here I store the file in the FTP using only it's name as I intended
+            print(filename)
     ftp_server.quit()
     # print("Deleting temporal batch files")
     # files = glob.glob(user_dir)
     # for f in files:
     #    os.remove(f)
+
+def updateTaskStatus(cnx, task_id, task_status):
+    cnx.reconnect()
+    cursor = cnx.cursor()
+    cursor.execute("UPDATE queue SET status = '%s' WHERE id = %s" % (task_status, task_id))
+    cursor.execute("UPDATE queue SET bot_username = '%s' WHERE id = %s" % (botUsername, task_id))
+    cnx.commit()

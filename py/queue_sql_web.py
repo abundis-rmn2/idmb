@@ -35,7 +35,8 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30):
         print("sleep_time: ", str(sleep_time))
         cursor = cnx.cursor()
         cursor.execute("SELECT * FROM queue "
-                       "WHERE 'waiting' in (status) "
+                       "WHERE status IN ('waiting', 'working') " 
+                       #"WHERE ('waiting', 'working') in (status) "
                        "LIMIT 0, %s" % (batch_size))
 
         queue_batch = cursor.fetchall()
@@ -45,12 +46,16 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30):
             time.sleep(sleep_time)
             if q[4] == "user":
                 print("User mining")
-                cnx.reconnect()
-                cursor.execute("UPDATE queue SET status = 'working' WHERE id = %s" % (q[0]))
-                cnx.commit()
-                idmb_userInfo(q[2], sleep_time, 30, 1, 0, 1, cnx, q[1])
-                cnx.reconnect()
-                cursor.execute("UPDATE queue SET status = 'done' WHERE id = %s" % (q[0]))
+                #cnx.reconnect()
+                #cursor.execute("UPDATE queue SET status = 'working' WHERE id = %s" % (q[0]))
+                #cursor.execute("UPDATE queue SET bot_username = 'botPrueba' WHERE id = %s" % (q[0]))
+                #cnx.commit()
+                updateTaskStatus(cnx, q[0], 'working')
+                idmb_userInfo(q[2], sleep_time, 3, 1, 0, 1, cnx, q[1])
+                #cnx.reconnect()
+                #cursor.execute("UPDATE queue SET status = 'done' WHERE id = %s" % (q[0]))
+                #cnx.commit()
+                updateTaskStatus(cnx, q[0], 'done')
             elif q[4] == "hashtagRecent":
                 print("Hashtag Recent mining")
             elif q[4] == "hashtagTop":
@@ -60,7 +65,7 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30):
 
         print("Big sleep between tasks")
         time.sleep(big_sleep)
-        fetch(batch_size, sleep_time)
+        fetch(batch_size, sleep_time, big_sleep)
 
 
-fetch(2, 0, 10)
+fetch(1, 0, 10)
