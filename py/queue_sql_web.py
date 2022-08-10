@@ -1,3 +1,5 @@
+import time
+
 import mysql.connector
 import ftplib
 import json
@@ -8,12 +10,12 @@ config = json.load(c)
 s = open("session.json")
 session = json.load(s)
 
-ftp_server = ftplib.FTP(config["FTP"]["hostname"],config["FTP"]["username"],config["FTP"]["password"])
-ftp_server.encoding = "utf-8"
+#ftp_server = ftplib.FTP(config["FTP"]["hostname"],config["FTP"]["username"],config["FTP"]["password"])
+#ftp_server.encoding = "utf-8"
 x = datetime.datetime.now()
 today = datetime.datetime.now()
 
-def fetch(batch_size=2, sleep_time=5):
+def fetch(batch_size=2, sleep_time=5, big_sleep=30):
     try:
         cnx = mysql.connector.connect(user=config["SQL"]["username"],
                                       password=config["SQL"]["password"],
@@ -39,12 +41,14 @@ def fetch(batch_size=2, sleep_time=5):
         queue_batch = cursor.fetchall()
 
         for q in queue_batch:
-            print(q[4])
+            print("Pause of sleep_time: ", str(sleep_time))
+            time.sleep(sleep_time)
             if q[4] == "user":
                 print("User mining")
+                cnx.reconnect()
                 cursor.execute("UPDATE queue SET status = 'working' WHERE id = %s" % (q[0]))
                 cnx.commit()
-                idmb_userInfo(q[2], 5, 15, 1, 0, 1, cnx, q[1], ftp_server)
+                idmb_userInfo(q[2], sleep_time, 30, 1, 0, 1, cnx, q[1])
                 cnx.reconnect()
                 cursor.execute("UPDATE queue SET status = 'done' WHERE id = %s" % (q[0]))
             elif q[4] == "hashtagRecent":
@@ -54,9 +58,9 @@ def fetch(batch_size=2, sleep_time=5):
             else:
                 return
 
-        print("Pause of sleep_time: ", str(sleep_time))
-        time.sleep(sleep_time)
+        print("Big sleep between tasks")
+        time.sleep(big_sleep)
         fetch(batch_size, sleep_time)
 
 
-fetch(2, 5)
+fetch(2, 0, 10)
