@@ -56,7 +56,7 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30):
                 #cursor.execute("UPDATE queue SET bot_username = 'botPrueba' WHERE id = %s" % (q[0]))
                 #cnx.commit()
                 updateTaskStatus(cnx, q[0], 'working')
-                idmb_userInfo(q[2], sleep_time, 3, 1, 0, 1, cnx, q[1])
+                idmb_userInfo(q, sleep_time, 30, 0, 0, 1, cnx)
                 #cnx.reconnect()
                 #cursor.execute("UPDATE queue SET status = 'done' WHERE id = %s" % (q[0]))
                 #cnx.commit()

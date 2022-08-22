@@ -23,25 +23,43 @@ print("Session ID: ", session['authorization_data']['sessionid'])
 cl.login_by_sessionid(session['authorization_data']['sessionid'])
 botUsername = cl.account_info().username
 
-def idmb_userInfo(username, request_timeout=2, media_pagination=30, media_minning=0, story_minning=0, sql=0, cnx=None, MUID=None, ftp=None):
+def idmb_userInfo(queue, request_timeout=2, media_pagination=30, media_minning=0, story_minning=0, sql=0, cnx=None, ftp=None):
+    username = queue[2]
+    MUID = queue[1]
+    iteration_no = queue[8]
+    iteration_meta = queue[3]
     start_time = time.time()
     cl.request_timeout = request_timeout  # seconds
     print("Username info for: ", username)
     info = cl.user_info_by_username(username)
     print(info)
     if sql == 1:
-
         cnx.reconnect()
         cursor = cnx.cursor()
-        following = json.dumps(idmb_userFollowing(username, 2))
-        print(following)
+        following_array = idmb_userFollowing(username, 2)
+        if not len(following_array) <= 3333:
+            print("Slice array to de 3333")
+            following_array = following_array[:3333]
+        print(len(following_array))
+        following_dump = json.dumps(following_array)
+        print(following_dump)
         print("SQL insert active")
         #sql = "INSERT INTO data_users (pk, username, full_name, is_private, profile_pic_url, profile_pic_url_hd, following_count, follower_count, biography, external_url, account_type, is_business, public_email, city_id, city_name, mined_at)" \
-        sql = "INSERT INTO data_users (MUID, pk, username, full_name, is_private, following_count, follower_count, biography, external_url, account_type, is_business, public_email, city_id, city_name, following, mined_at)" \
-              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" #16
-        val = (MUID, info.pk, info.username, info.full_name, info.is_private, info.following_count, info.follower_count, info.biography, info.external_url, info.account_type, info.is_business, info.public_email, info.city_id, info.city_name, following, datetime.datetime.now())
+        sql = "INSERT INTO data_users (MUID, pk, username, full_name, is_private, media_count, following_count, follower_count, biography, external_url, account_type, is_business, public_email, city_id, city_name, following, mined_at)" \
+              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" #16
+        val = (MUID, info.pk, info.username, info.full_name, info.is_private,info.media_count, info.following_count, info.follower_count, info.biography, info.external_url, info.account_type, info.is_business, info.public_email, info.city_id, info.city_name, following_dump, datetime.datetime.now())
         cursor.execute(sql, val)
         cnx.commit()
+        if not iteration_no >= iteration_meta:
+            print("Adding queue batch for next iteration")
+            for follow in following_array:
+                print(follow)
+                sql = "INSERT INTO queue (MUID, seed_node, mining_depth, mining_type, created_at, hashtag_media_amount, iteration_no, status)" \
+                      "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"  # 7
+                val = (
+                MUID, follow, queue[3], queue[4], queue[5], datetime.datetime.now(), 1, 'waiting' )
+                cursor.execute(sql, val)
+                cnx.commit()
     else:
         print("SQL insert not active")
     if media_minning == 1:
@@ -70,19 +88,40 @@ def idmb_userMedias(user_id, media_pagination, media_count, iteration_no=None, i
 
             cursor = medias[1]
             list = medias[0]
-
             print(cursor)
             print(cnx)
             print("Media SQL Insert")
 
-            idmb_userSaveDataFTPSQL(list,cnx,user_id)
+            idmb_userSaveDataSQL(list,cnx,user_id)
             idmb_userMedias(user_id, media_pagination, media_count, iteration_no, iteration_counter + 1, cursor, cnx)
     else:
         print("Iterations needed: 1")
         medias = cl.user_medias_paginated(user_id)
         list = medias[0]
 
-        idmb_userSaveDataFTPSQL(list,cnx,user_id)
+        idmb_userSaveDataSQL(list,cnx,user_id)
+
+def idmb_userSaveDataSQL(list, cnx, user_id):
+    for i, item in enumerate(list, 1):
+        cnx.reconnect()
+        inner_cursor = cnx.cursor()
+        print(item.pk)
+
+        media_conc = item.user.username + '_' + item.pk
+        sql = "INSERT INTO data_media (user_id, pk, m_id, taken_at, media_type, product_type, location, comment_count, like_count, caption_text, media)" \
+              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"  # 10
+        val = (
+        str(user_id), str(item.pk), str(item.id), item.taken_at, item.media_type, item.product_type, item.location,
+        item.comment_count, item.like_count, item.caption_text, media_conc)
+
+        inner_cursor.execute(sql, val)
+        cnx.commit()
+
+        print(item.media_type, end="\n")
+        print(item.product_type, end="\n")
+        print(item.caption_text, end="\n")
+        print(i, end="\n")
+        print("----------------------------", end="\n")
 
 def idmb_userSaveDataFTPSQL(list, cnx, user_id):
     user_dir = "tmp/" + user_id
