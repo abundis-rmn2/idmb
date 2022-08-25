@@ -37,19 +37,33 @@ def idmb_userInfo(queue, request_timeout=2, media_pagination=30, media_minning=0
         cnx.reconnect()
         cursor = cnx.cursor()
         following_array = idmb_userFollowing(username, 2)
-        if not len(following_array) <= 3333:
-            print("Slice array to de 3333")
-            following_array = following_array[:3333]
-        print(len(following_array))
-        following_dump = json.dumps(following_array)
-        print(following_dump)
-        print("SQL insert active")
-        #sql = "INSERT INTO data_users (pk, username, full_name, is_private, profile_pic_url, profile_pic_url_hd, following_count, follower_count, biography, external_url, account_type, is_business, public_email, city_id, city_name, mined_at)" \
-        sql = "INSERT INTO data_users (MUID, pk, username, full_name, is_private, media_count, following_count, follower_count, biography, external_url, account_type, is_business, public_email, city_id, city_name, following, mined_at)" \
-              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" #16
-        val = (MUID, info.pk, info.username, info.full_name, info.is_private,info.media_count, info.following_count, info.follower_count, info.biography, info.external_url, info.account_type, info.is_business, info.public_email, info.city_id, info.city_name, following_dump, datetime.datetime.now())
-        cursor.execute(sql, val)
-        cnx.commit()
+        if not len(following_array) <= 3000:
+            print("Following sliced insert")
+            print("Slice array to ")
+            following_dump = str(json.dumps(following_array[:3000]))
+            print(following_dump)
+            print("SQL insert active")
+            # sql = "INSERT INTO data_users (pk, username, full_name, is_private, profile_pic_url, profile_pic_url_hd, following_count, follower_count, biography, external_url, account_type, is_business, public_email, city_id, city_name, mined_at)" \
+            sql = "INSERT INTO data_users (MUID, pk, username, full_name, is_private, media_count, following_count, follower_count, biography, external_url, account_type, is_business, public_email, city_id, city_name, following, mined_at)" \
+                  "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"  # 16
+            val = (
+            MUID, info.pk, info.username, info.full_name, info.is_private, info.media_count, info.following_count,
+            info.follower_count, info.biography, info.external_url, info.account_type, info.is_business,
+            info.public_email, info.city_id, info.city_name, following_dump, datetime.datetime.now())
+            #cursor.execute(sql, val)
+            #cnx.commit()
+        else:
+            print("Following full insert")
+            print(len(following_array))
+            following_dump = json.dumps(following_array)
+            print(following_dump)
+            print("SQL insert active")
+            #sql = "INSERT INTO data_users (pk, username, full_name, is_private, profile_pic_url, profile_pic_url_hd, following_count, follower_count, biography, external_url, account_type, is_business, public_email, city_id, city_name, mined_at)" \
+            sql = "INSERT INTO data_users (MUID, pk, username, full_name, is_private, media_count, following_count, follower_count, biography, external_url, account_type, is_business, public_email, city_id, city_name, following, mined_at)" \
+                  "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" #16
+            val = (MUID, info.pk, info.username, info.full_name, info.is_private,info.media_count, info.following_count, info.follower_count, info.biography, info.external_url, info.account_type, info.is_business, info.public_email, info.city_id, info.city_name, following_dump, datetime.datetime.now())
+            cursor.execute(sql, val)
+            cnx.commit()
         if not iteration_no >= iteration_meta:
             print("Adding queue batch for next iteration")
             for follow in following_array:

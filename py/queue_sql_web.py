@@ -45,22 +45,17 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30):
                        "LIMIT 0, %s" % (batch_size))
 
         queue_batch = cursor.fetchall()
-
         for q in queue_batch:
             print("Pause of sleep_time: ", str(sleep_time))
             time.sleep(sleep_time)
             if q[4] == "user":
-                print("User mining")
-                #cnx.reconnect()
-                #cursor.execute("UPDATE queue SET status = 'working' WHERE id = %s" % (q[0]))
-                #cursor.execute("UPDATE queue SET bot_username = 'botPrueba' WHERE id = %s" % (q[0]))
-                #cnx.commit()
-                updateTaskStatus(cnx, q[0], 'working')
-                idmb_userInfo(q, sleep_time, 30, 0, 0, 1, cnx)
-                #cnx.reconnect()
-                #cursor.execute("UPDATE queue SET status = 'done' WHERE id = %s" % (q[0]))
-                #cnx.commit()
-                updateTaskStatus(cnx, q[0], 'done')
+                print(q[7])
+                print(q[2])
+                if q[7] =="":
+                    print("User mining")
+                    updateTaskStatus(cnx, q[0], 'working')
+                    idmb_userInfo(q, sleep_time, 30, 0, 0, 1, cnx)
+                    updateTaskStatus(cnx, q[0], 'done')
             elif q[4] == "hashtagRecent":
                 print("Hashtag Recent mining")
             elif q[4] == "hashtagTop":
@@ -73,4 +68,4 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30):
         fetch(batch_size, sleep_time, big_sleep)
 
 
-fetch(1, 0, 10)
+fetch(5, 2, 10)
