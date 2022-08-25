@@ -34,7 +34,7 @@ def idmb_userInfo(queue, request_timeout=2, media_pagination=30, media_minning=0
     info = cl.user_info_by_username(username)
     print(info)
     if sql == 1:
-        #cnx.reconnect()
+        cnx.reconnect()
         cursor = cnx.cursor()
         following_array = idmb_userFollowing(username, 2)
         if not len(following_array) <= 3000:
@@ -117,7 +117,7 @@ def idmb_userMedias(user_id, media_pagination, media_count, iteration_no=None, i
 
 def idmb_userSaveDataSQL(list, cnx, user_id):
     for i, item in enumerate(list, 1):
-        #cnx.reconnect()
+        cnx.reconnect()
         inner_cursor = cnx.cursor()
         print(item.pk)
 
@@ -150,7 +150,7 @@ def idmb_userSaveDataFTPSQL(list, cnx, user_id):
     working_dir = user_dir + "/" + batch_dir
 
     for i, item in enumerate(list, 1):
-        #cnx.reconnect()
+        cnx.reconnect()
         inner_cursor = cnx.cursor()
         print(item.pk)
 

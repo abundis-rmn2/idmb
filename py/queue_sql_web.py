@@ -1,9 +1,18 @@
 import time
-
+import argparse
 import mysql.connector
 import ftplib
 import json
 from functions_minning import *
+
+parser = argparse.ArgumentParser(description='Paso de parámetros')
+parser.add_argument("-batch_size", dest="batch_size", help="Fetch from SQL queue list")
+parser.add_argument("-starting", dest="starting", help="Jump to list")
+parser.add_argument("-sleep_time", dest="sleep_time", help="Sleep time between Instagram requests")
+parser.add_argument("-big_sleep", dest="big_sleep", help="Sleep between SQL fetch")
+params = parser.parse_args()
+print(params)
+
 
 c = open("config.json")
 config = json.load(c)
@@ -20,7 +29,7 @@ session = json.load(s)
 #ftp_server.encoding = "utf-8"
 x = datetime.datetime.now()
 today = datetime.datetime.now()
-def fetch(batch_size=2, sleep_time=5, big_sleep=30, err_counter=0):
+def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
     try:
         cnx = mysql.connector.connect(user=config["SQL"]["username"],
                                       password=config["SQL"]["password"],
@@ -44,8 +53,11 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30, err_counter=0):
                        "LIMIT 0, %s" % (batch_size))
 
         queue_batch = cursor.fetchall()
+        print("BatchCompleto: ",len(queue_batch))
+        sliced_queue = queue_batch[starting:starting+10]
+        print("BatchRecortado: ",len(sliced_queue))
 
-        for q in queue_batch:
+        for q in sliced_queue:
             print("Pause of sleep_time: ", str(sleep_time))
             time.sleep(sleep_time)
             if q[4] == "user":
@@ -67,8 +79,8 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30, err_counter=0):
                 return
 
         print("Big sleep between tasks")
-        time.sleep(big_sleep)
-        fetch(batch_size, sleep_time, big_sleep, err_counter)
+        time.sleep(int(big_sleep))
+        fetch(batch_size, sleep_time, params.big_sleep, err_counter, starting)
 
 err_counter = 0
-fetch(1, 5, 30, err_counter)
+fetch(int(params.batch_size), int(params.sleep_time), int(params.big_sleep), err_counter, int(params.starting))
