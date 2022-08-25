@@ -20,8 +20,7 @@ session = json.load(s)
 #ftp_server.encoding = "utf-8"
 x = datetime.datetime.now()
 today = datetime.datetime.now()
-
-def fetch(batch_size=2, sleep_time=5, big_sleep=30):
+def fetch(batch_size=2, sleep_time=5, big_sleep=30, err_counter=0):
     try:
         cnx = mysql.connector.connect(user=config["SQL"]["username"],
                                       password=config["SQL"]["password"],
@@ -45,17 +44,21 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30):
                        "LIMIT 0, %s" % (batch_size))
 
         queue_batch = cursor.fetchall()
+
         for q in queue_batch:
             print("Pause of sleep_time: ", str(sleep_time))
             time.sleep(sleep_time)
             if q[4] == "user":
+                err_counter += 1
+                print(err_counter)
                 print(q[7])
                 print(q[2])
-                if q[7] =="":
+                if q[7] =="" or q[7] == botUsername or err_counter == 3:
                     print("User mining")
                     updateTaskStatus(cnx, q[0], 'working')
                     idmb_userInfo(q, sleep_time, 30, 0, 0, 1, cnx)
                     updateTaskStatus(cnx, q[0], 'done')
+                    err_counter= 0
             elif q[4] == "hashtagRecent":
                 print("Hashtag Recent mining")
             elif q[4] == "hashtagTop":
@@ -65,7 +68,7 @@ def fetch(batch_size=2, sleep_time=5, big_sleep=30):
 
         print("Big sleep between tasks")
         time.sleep(big_sleep)
-        fetch(batch_size, sleep_time, big_sleep)
+        fetch(batch_size, sleep_time, big_sleep, err_counter)
 
-
-fetch(5, 2, 10)
+err_counter = 0
+fetch(1, 5, 30, err_counter)
