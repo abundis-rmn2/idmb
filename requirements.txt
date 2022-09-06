@@ -1,3 +1,5 @@
 mysql-connector-python==8.0.25
 instagrapi==1.16.27
 Pillow>=8.1.1
+httpx
+pystyle

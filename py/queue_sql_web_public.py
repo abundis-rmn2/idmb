@@ -10,6 +10,7 @@ parser.add_argument("-batch_size", dest="batch_size", help="Fetch from SQL queue
 parser.add_argument("-starting", dest="starting", help="Jump to list")
 parser.add_argument("-sleep_time", dest="sleep_time", help="Sleep time between Instagram requests")
 parser.add_argument("-big_sleep", dest="big_sleep", help="Sleep between SQL fetch")
+parser.add_argument("-proxy", dest="proxy", help="Available proxy")
 params = parser.parse_args()
 print(params)
 
@@ -19,17 +20,11 @@ config = json.load(c)
 s = open("session.json")
 session = json.load(s)
 
-#if os.path.isfile("proxy.txt"):
-#    proxy = open("proxy.txt", "r")
-#    proxy_address = proxy.read()
-#    print(proxy_address)
-#    cl.set_proxy(proxy_address)
-
-#ftp_server = ftplib.FTP(config["FTP"]["hostname"],config["FTP"]["username"],config["FTP"]["password"])
-#ftp_server.encoding = "utf-8"
 x = datetime.datetime.now()
 today = datetime.datetime.now()
-def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
+def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, proxy=None):
+    if proxy == None:
+        return
     try:
         cnx = mysql.connector.connect(user=config["SQL"]["username"],
                                       password=config["SQL"]["password"],
@@ -54,7 +49,7 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
 
         queue_batch = cursor.fetchall()
         print("BatchCompleto: ",len(queue_batch))
-        sliced_queue = queue_batch[starting:batch_size-5]
+        sliced_queue = queue_batch[starting:starting+10]
         print("BatchRecortado: ",len(sliced_queue))
 
         for q in sliced_queue:
@@ -65,10 +60,10 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
                 print(err_counter)
                 print(q[7])
                 print(q[2])
-                if q[7] =="" or q[7] == botUsername or err_counter == 3:
+                if err_counter == 1:
                     print("User mining")
                     updateTaskStatus(cnx, q[0], 'working')
-                    idmb_userInfo(q, sleep_time, 30, 0, 0, 1, cnx)
+                    idmb_userInfo_public(q, sleep_time, 30, 0, 0, 1, cnx, proxy)
                     updateTaskStatus(cnx, q[0], 'done')
                     err_counter= 0
             elif q[4] == "hashtagRecent":
@@ -80,7 +75,9 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
 
         print("Big sleep between tasks")
         time.sleep(int(big_sleep))
-        fetch(batch_size, sleep_time, params.big_sleep, err_counter, starting)
+        fetch(batch_size, sleep_time, params.big_sleep, err_counter, starting, proxy)
+
+#python py/queue_sql_web_public.py -batch_size=80 -starting=40 -sleep_time=0 -big_sleep=0 -proxy http://23.109.55.188:10011
 
 err_counter = 0
-fetch(int(params.batch_size), int(params.sleep_time), int(params.big_sleep), err_counter, int(params.starting))
+fetch(int(params.batch_size), int(params.sleep_time), int(params.big_sleep), err_counter, int(params.starting), params.proxy)
