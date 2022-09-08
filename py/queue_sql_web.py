@@ -65,10 +65,12 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
                 print(err_counter)
                 print(q[7])
                 print(q[2])
-                if q[7] =="" or q[7] == botUsername or err_counter == 3:
+                #if q[7] =="" or q[7] == botUsername or err_counter == 3:
+                #Barredora Setting
+                if q[4] == "user":
                     print("User mining")
                     updateTaskStatus(cnx, q[0], 'working')
-                    idmb_userInfo(q, sleep_time, 30, 0, 0, 1, cnx)
+                    idmb_userInfo(q, sleep_time, 30, 1, 0, 1, cnx)
                     updateTaskStatus(cnx, q[0], 'done')
                     err_counter= 0
             elif q[4] == "hashtagRecent":

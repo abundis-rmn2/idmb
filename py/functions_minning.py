@@ -43,7 +43,7 @@ def idmb_userInfo(queue, request_timeout=2, media_pagination=30, media_minning=0
     if sql == 1:
         cnx.reconnect()
         cursor = cnx.cursor()
-        following_array = idmb_userFollowing(username, 2)
+        following_array = idmb_userFollowing(username, 2, 3000)
         if not len(following_array) <= 3000:
             print("Following sliced insert")
             print("Slice array to ")
