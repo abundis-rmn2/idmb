@@ -33,7 +33,9 @@ session = json.load(s)
 x = datetime.datetime.now()
 today = datetime.datetime.now()
 
-def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
+iteration_limit=21
+
+def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, counter=0):
     try:
         cnx = mysql.connector.connect(user=config["SQL"]["username"],
                                       password=config["SQL"]["password"],
@@ -48,9 +50,12 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
         else:
             print(err)
     else:
+        counter += 1
+        print("iteration number", counter)
         print("Running queue bot with")
         print("batch_size: ", str(batch_size))
         print("sleep_time: ", str(sleep_time))
+        print("big_sleep: ", str(big_sleep))
         cursor = cnx.cursor()
         cursor.execute("SELECT * FROM queue "
                        "WHERE status IN ('waiting', 'working') "
@@ -100,9 +105,26 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
             else:
                 return
 
-        print("Big sleep between tasks")
+        print("Big sleep between tasks: ", big_sleep)
         time.sleep(int(big_sleep))
-        fetch(batch_size, sleep_time, params.big_sleep, err_counter, starting)
+        print("New fetch() but with multiplied sleep_time")
+        if sleep_time < 0.5 or sleep_time > 60:
+            sleep_time = int(params.sleep_time)
+        if big_sleep < 30 or big_sleep > 600:
+            big_sleep = int(params.big_sleep)
+
+        #sleep_time = round(sleep_time)
+        list1 = [0.1, 1, 2, 3.5]
+        sleep_time = sleep_time * random.choice(list1)
+        big_sleep = big_sleep * random.choice(list1)
+        print("randomized sleep_time", sleep_time)
+        print("randomized big_sleep", big_sleep)
+
+        if counter < iteration_limit:
+            fetch(batch_size, sleep_time, big_sleep, err_counter, starting, counter)
+        else:
+            print("stop at iteration: ", iteration_limit)
+            return
 
 err_counter = 0
 fetch(int(params.batch_size), int(params.sleep_time), int(params.big_sleep), err_counter, int(params.starting))

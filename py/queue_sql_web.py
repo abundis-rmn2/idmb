@@ -29,7 +29,7 @@ session = json.load(s)
 #ftp_server.encoding = "utf-8"
 x = datetime.datetime.now()
 today = datetime.datetime.now()
-def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
+def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, counter=0):
     try:
         cnx = mysql.connector.connect(user=config["SQL"]["username"],
                                       password=config["SQL"]["password"],
@@ -44,6 +44,8 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
         else:
             print(err)
     else:
+        counter += 1
+        print("iteration number", counter)
         print("Running queue bot with")
         print("batch_size: ", str(batch_size))
         print("sleep_time: ", str(sleep_time))
@@ -82,7 +84,7 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0):
 
         print("Big sleep between tasks")
         time.sleep(int(big_sleep))
-        fetch(batch_size, sleep_time, params.big_sleep, err_counter, starting)
+        fetch(batch_size, sleep_time, params.big_sleep, err_counter, starting, counter)
 
 err_counter = 0
 fetch(int(params.batch_size), int(params.sleep_time), int(params.big_sleep), err_counter, int(params.starting))
