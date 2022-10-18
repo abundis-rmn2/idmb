@@ -10,6 +10,7 @@ parser.add_argument("-batch_size", dest="batch_size", help="Fetch from SQL queue
 parser.add_argument("-starting", dest="starting", help="Jump to list")
 parser.add_argument("-sleep_time", dest="sleep_time", help="Sleep time between Instagram requests")
 parser.add_argument("-big_sleep", dest="big_sleep", help="Sleep between SQL fetch")
+parser.add_argument("-MUID", dest="p_MUID", help="MUID to fetch")
 params = parser.parse_args()
 print(params)
 
@@ -35,7 +36,7 @@ today = datetime.datetime.now()
 
 iteration_limit=21
 
-def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, counter=0):
+def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, counter=0, p_MUID=None):
     try:
         cnx = mysql.connector.connect(user=config["SQL"]["username"],
                                       password=config["SQL"]["password"],
@@ -56,11 +57,18 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, 
         print("batch_size: ", str(batch_size))
         print("sleep_time: ", str(sleep_time))
         print("big_sleep: ", str(big_sleep))
+        print("MUID: ", str(p_MUID))
         cursor = cnx.cursor()
-        cursor.execute("SELECT * FROM queue "
-                       "WHERE status IN ('waiting', 'working') "
-                       "AND mining_type = 'hashtagTop'"
-                       "LIMIT 0, %s" % (batch_size))
+        if p_MUID == 'None':
+            cursor.execute("SELECT * FROM queue "
+                           "WHERE status IN ('waiting', 'working') "
+                           "AND mining_type = 'hashtagTop'"
+                           "LIMIT 0, %s" % (batch_size))
+        else:
+            cursor.execute("SELECT * FROM queue "
+                           "WHERE status IN ('waiting', 'working') "
+                           "AND MUID = '%s'" 
+                           "LIMIT 0, %s" % (p_MUID, batch_size))
 
         queue_batch = cursor.fetchall()
         print("BatchCompleto: ",len(queue_batch))
@@ -121,10 +129,10 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, 
         print("randomized big_sleep", big_sleep)
 
         if counter < iteration_limit:
-            fetch(batch_size, sleep_time, big_sleep, err_counter, starting, counter)
+            fetch(batch_size, sleep_time, big_sleep, err_counter, starting, counter, p_MUID)
         else:
             print("stop at iteration: ", iteration_limit)
             return
 
 err_counter = 0
-fetch(int(params.batch_size), int(params.sleep_time), int(params.big_sleep), err_counter, int(params.starting))
+fetch(int(params.batch_size), int(params.sleep_time), int(params.big_sleep), err_counter, int(params.starting),0 , str(params.p_MUID))

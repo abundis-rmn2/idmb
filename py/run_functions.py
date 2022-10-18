@@ -10,4 +10,6 @@ from functions_minning import *
 #idmb_hashtagMediasTop("freightgraffiti", 4 , 30)
 
 #idmb_hashtagMediasRecent("freightgraffiti", 3 , 30)
-print(cl.hashtag_info('freightgraffiti').profile_pic_url)
+#print(cl.hashtag_info('freightgraffiti').profile_pic_url)
+
+print ( cl.hashtag_medias_recent_v1("freightgraffiti", 9) )

@@ -295,6 +295,7 @@ def idmb_hashtagSaveDataFTPSQL(list_arr, cnx, hashtag_id, info, MUID, iteration_
 
     #SQL publication record insert
     for i, item in enumerate(list_arr, 1):
+        print(item)
         cnx.reconnect()
         print("Inserting SQL record")
         print(item.pk)
@@ -308,11 +309,11 @@ def idmb_hashtagSaveDataFTPSQL(list_arr, cnx, hashtag_id, info, MUID, iteration_
         print("Hashtags used")
         print(hashtags_used)
 
-        sql = "INSERT INTO data_media (user_id, MUID, pk, m_id, taken_at, media_type, product_type, location, comment_count, like_count, caption_text, media, hashtags_used)" \
-              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"  # 13
+        sql = "INSERT INTO data_media (user_id, MUID, pk, m_id, taken_at, media_type, product_type, location, comment_count, like_count, caption_text, media, hashtags_used, hashtag_origin)" \
+              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"  # 13
         val = (
         str(item.user.username), MUID , str(item.pk), str(item.id), item.taken_at, item.media_type, item.product_type, str(item.location),
-        item.comment_count, item.like_count, item.caption_text, media_conc, str(hashtags_used))
+        item.comment_count, item.like_count, item.caption_text, media_conc, str(hashtags_used), hashtag_id)
         cnx.reconnect()
         inner_cursor = cnx.cursor()
         inner_cursor.execute(sql, val)
