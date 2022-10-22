@@ -11,6 +11,7 @@ parser.add_argument("-starting", dest="starting", help="Jump to list")
 parser.add_argument("-sleep_time", dest="sleep_time", help="Sleep time between Instagram requests")
 parser.add_argument("-big_sleep", dest="big_sleep", help="Sleep between SQL fetch")
 parser.add_argument("-MUID", dest="p_MUID", help="MUID to fetch")
+parser.add_argument("-iteration_limit", dest="iteration", help="Number of iterations")
 params = parser.parse_args()
 print(params)
 
@@ -34,9 +35,13 @@ session = json.load(s)
 x = datetime.datetime.now()
 today = datetime.datetime.now()
 
-iteration_limit=21
+if params.iteration == None:
+    iteration_limit=21
+else:
+    iteration_limit=int(params.iteration)
 
 def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, counter=0, p_MUID=None):
+    print("Limit of iterations", iteration_limit)
     try:
         cnx = mysql.connector.connect(user=config["SQL"]["username"],
                                       password=config["SQL"]["password"],
