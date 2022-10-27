@@ -1,13 +1,13 @@
 {
   "SQL": {
-    "hostname": "abundis.com.mx",
-    "database": "abundisc_idmb_nvi",
-    "username": "abundisc_xamuri",
-    "password": "%8T[-kWX,E}N"
+    "hostname": "*",
+    "database": "*",
+    "username": "*",
+    "password": "*"
   },
   "FTP": {
-    "hostname": "abundis.com.mx",
-    "username": "data_python@abundis.com.mx",
-    "password": "0xQbrS1pxXd!"
+    "hostname": "*",
+    "username": "*",
+    "password": "*"
   }
 }
