@@ -43,6 +43,9 @@ else:
 timeline = cl.get_timeline_feed()
 print("Get timeline, to emulate mobile app behavior")
 print(timeline.keys())
+print("Get news and inbox, to emulate mobile app behavior")
+news_inbox = cl.news_inbox_v1()
+print(news_inbox)
 
 time.sleep(8)
 def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, counter=0, p_MUID=None):
