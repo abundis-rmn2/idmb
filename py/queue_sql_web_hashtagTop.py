@@ -12,6 +12,7 @@ parser.add_argument("-sleep_time", dest="sleep_time", help="Sleep time between I
 parser.add_argument("-big_sleep", dest="big_sleep", help="Sleep between SQL fetch")
 parser.add_argument("-MUID", dest="p_MUID", help="MUID to fetch")
 parser.add_argument("-iteration_limit", dest="iteration", help="Number of iterations")
+parser.add_argument("-barredora", dest="barredora", help="Activate barredora")
 params = parser.parse_args()
 print(params)
 
@@ -116,7 +117,7 @@ def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, 
                 print(q[7])
                 print(q[2])
                 print(q)
-                if q[7] =="" or q[7] == botUsername or err_counter == 3:
+                if q[7] =="" or q[7] == botUsername or err_counter == 3 or params.barredora =="on":
                     print("Hashtag Recent mining")
                     updateTaskStatus(cnx, q[0], 'working')
                     idmb_hashtagMediasTop(hashtag=q[2], request_timeout=sleep_time,amount=q[5], cnx=cnx,MUID=q[1], iteration_meta=q[3], iteration_no=q[8], queue=q)
