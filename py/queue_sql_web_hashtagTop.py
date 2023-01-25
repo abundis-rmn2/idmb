@@ -40,6 +40,11 @@ if params.iteration == None:
 else:
     iteration_limit=int(params.iteration)
 
+timeline = cl.get_timeline_feed()
+print("Get timeline, to emulate mobile app behavior")
+print(timeline.keys())
+
+time.sleep(8)
 def fetch(batch_size=10, sleep_time=5, big_sleep=30, err_counter=0, starting=0, counter=0, p_MUID=None):
     print("Limit of iterations", iteration_limit)
     try:

@@ -28,7 +28,8 @@ today = datetime.datetime.now()
 print("Datos de la sesión guardados en session.json")
 print("Session ID: ", session['authorization_data']['sessionid'])
 cl.login_by_sessionid(session['authorization_data']['sessionid'])
-botUsername = "barredora"
+print(cl.account_info().dict()["username"])
+botUsername = cl.account_info().dict()["username"]
 
 def idmb_userInfo(queue, request_timeout=2, media_pagination=30, media_minning=0, story_minning=0, sql=0, cnx=None, ftp=None):
     username = queue[2]
@@ -526,6 +527,7 @@ def remove_emojis(data):
         u"\u231a"
         u"\ufe0f"  # dingbats
         u"\u3030"
+        u"\u0100-\u017f" #polish
                       "]+", re.UNICODE)
     cleanString = bytes(re.sub(emoj, '', data), 'utf-8').decode('utf-8', 'ignore')
     return cleanString
