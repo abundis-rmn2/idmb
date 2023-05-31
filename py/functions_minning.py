@@ -350,13 +350,17 @@ def idmb_hashtagSaveDataFTPSQL(list_arr, cnx, hashtag_id, info, MUID, iteration_
         if item.media_type == 1:
             cl.photo_download(int(item.pk), working_dir)
         elif item.media_type == 2 and item.product_type == 'feed':
-            cl.video_download(int(item.pk), working_dir)
+            #cl.video_download(int(item.pk), working_dir)
+            print("no compatible media")
         elif item.media_type == 2 and item.product_type == 'igtv':
-            cl.igtv_download(int(item.pk), working_dir)
+            #cl.igtv_download(int(item.pk), working_dir)
+            print("no compatible media")
         elif item.media_type == 2 and item.product_type == 'reel':
-            cl.clip_download(int(item.pk), working_dir)
+            #cl.clip_download(int(item.pk), working_dir)
+            print("no compatible media")
         elif item.media_type == 8:
-            cl.album_download(int(item.pk), working_dir)
+            #cl.album_download(int(item.pk), working_dir)
+            print("no compatible media")
         else:
             print("Err: media_type not defined")
 
