@@ -1,15 +1,20 @@
 # Instagram Data Mining Bot
 
 ## Overview
-This project is designed to perform automated data mining tasks on Instagram, leveraging SQL databases, FTP servers, and external API integrations. The bot fetches and processes data such as hashtags, user information, and posts while emulating mobile app behavior to avoid detection.
+This project is designed to perform automated data mining tasks on Instagram, leveraging SQL databases, FTP servers, and external API integrations. The bot fetches and processes data such as hashtags, user information, and posts while emulating mobile app behavior to avoid detection. Additionally, it dynamically identifies and adds new hashtags to the mining queue through an iterative process, enabling extensive and adaptive data collection.
 
 ## Features
-- Fetch and process Instagram data in batches.
+- Fetch and process Instagram data in batches, allowing for scalable data mining.
+- Dynamically add newly discovered hashtags to mining tasks through an iterative process, broadening the dataset.
 - Configurable parameters for batch size, sleep times, and iteration limits.
 - Integration with MySQL for data storage and queue management.
 - Support for FTP server connections to upload media files.
 - Error handling and adaptive sleep times to avoid rate limits.
 - Automatic login and session management with support for FTP-stored sessions.
+- Ability to mine "n" number of posts for each hashtag, including posts related to newly discovered hashtags.
+
+## Iterative Hashtag Mining
+One of the key features of this bot is its ability to expand the mining scope dynamically by discovering and adding new hashtags to the mining tasks. During the data collection process, the script analyzes posts for associated hashtags and queues them for subsequent mining. This iterative approach ensures that the bot continuously broadens its dataset, capturing a more comprehensive network of posts and hashtags. The parameter **`-iteration_limit`** interacts closely with the iterator, controlling the depth of mining by limiting the number of iterations. The script can also download "n" number of posts for each hashtag, ensuring thorough coverage of relevant content.
 
 ## Prerequisites
 To run this project, you will need:
@@ -68,7 +73,7 @@ python queue_sql_web_hashtagTop.py -batch_size <batch_size> -starting <starting_
 - **`-sleep_time`**: Time in seconds between Instagram requests.
 - **`-big_sleep`**: Time in seconds between SQL fetches.
 - **`-MUID`**: Specific MUID to fetch.
-- **`-iteration_limit`**: Maximum number of iterations for the fetch function.
+- **`-iteration_limit`**: Maximum number of iterations for the fetch function. This parameter interacts closely with the iterator, determining how many cycles the script will perform and controlling the depth of hashtag mining.
 - **`-barredora`**: Activate barredora mode (optional).
 
 ### Example
@@ -100,13 +105,14 @@ python main.py -batch_size 10 -starting 0 -sleep_time 5 -big_sleep 30 -MUID None
 
 ## Development
 ### Main Functions
-- **`fetch`**: Core function to process data in batches, handle errors, and manage SQL interactions.
+- **`fetch`**: Core function to process data in batches, handle errors, and manage SQL interactions. This function iteratively adds newly found hashtags to the queue, enabling comprehensive mining.
 - **`updateTaskStatus`**: Updates the status of tasks in the SQL database.
-- **`idmb_hashtagMediasTop`** and **`idmb_hashtagMediasRecent`**: Fetch top and recent hashtag data from Instagram.
+- **`idmb_hashtagMediasTop`** and **`idmb_hashtagMediasRecent`**: Fetch top and recent hashtag data from Instagram. These functions allow mining a specified number of posts for each hashtag, including posts linked to hashtags discovered during the mining process.
 - **`login`**: Handles login and session file management.
 
 ## License
 This project is licensed under the MIT License. See the `LICENSE` file for details.
+
 ## Contact
 For questions or feedback, please contact:
 - **Name:** Angel R. Abundis
