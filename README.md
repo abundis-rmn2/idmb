@@ -1,4 +1,4 @@
-# Project: Instagram Data Mining Bot
+# Instagram Data Mining Bot
 
 ## Overview
 This project is designed to perform automated data mining tasks on Instagram, leveraging SQL databases, FTP servers, and external API integrations. The bot fetches and processes data such as hashtags, user information, and posts while emulating mobile app behavior to avoid detection.
@@ -7,7 +7,7 @@ This project is designed to perform automated data mining tasks on Instagram, le
 - Fetch and process Instagram data in batches.
 - Configurable parameters for batch size, sleep times, and iteration limits.
 - Integration with MySQL for data storage and queue management.
-- Support for FTP server connections to upload/download files.
+- Support for FTP server connections to upload media files.
 - Error handling and adaptive sleep times to avoid rate limits.
 - Automatic login and session management with support for FTP-stored sessions.
 
@@ -34,7 +34,7 @@ To run this project, you will need:
 
 3. Configure your environment:
    - Update `config.json` with MySQL and FTP credentials.
-   - Ensure `session.json` contains the required session data for Instagram access.
+   - Ensure `session.json` contains the required session data for Instagram access, or use login.py
 
 4. (Optional) Set up a proxy:
    - Create a `proxy.txt` file with the proxy address.
@@ -59,7 +59,7 @@ python login.py -usr <instagram_username> -pass <instagram_password> -proxy <opt
 Run the script with customizable parameters using the command line:
 
 ```bash
-python main.py -batch_size <batch_size> -starting <starting_point> -sleep_time <sleep_time> -big_sleep <big_sleep_time> -MUID <muid> -iteration_limit <iteration_limit> -barredora <on/off>
+python queue_sql_web_hashtagTop.py -batch_size <batch_size> -starting <starting_point> -sleep_time <sleep_time> -big_sleep <big_sleep_time> -MUID <muid> -iteration_limit <iteration_limit> -barredora <on/off>
 ```
 
 ### Parameters
@@ -107,7 +107,6 @@ python main.py -batch_size 10 -starting 0 -sleep_time 5 -big_sleep 30 -MUID None
 
 ## License
 This project is licensed under the MIT License. See the `LICENSE` file for details.
-
 ## Contact
 For questions or feedback, please contact:
 - **Name:** Angel R. Abundis
